@@ -53,6 +53,15 @@ v3 transformation_three(m3 a, v3 b)
     return c;
 }
 
+m3 identity_three()
+{
+    m3 a;
+    a.x1 = 1; a.x2 = 0; a.x3 = 0;
+    a.y1 = 0; a.y2 = 1; a.y3 = 0;
+    a.z1 = 0; a.z2 = 0; a.z3 = 1;
+    return a;
+}
+
 int main()
 {
     uint32_t buffer[320*200];
@@ -64,13 +73,18 @@ int main()
         points[i].z = randf() - 0.5;
 
     }
+
+    //matrix
+    m3 matrix = identity_three();
+
     for(size_t frame = 0; ; frame++)
     {
         clear(buffer, 0xffdceaf5);
         for (int i = 0; i < 50; i++)
         {
-            int x = (int) (points[i].x*50 + 320/2);
-            int y = (int) (points[i].y*50 + 200/2);
+            v3 transformed = transformation_three(matrix, points[i]);
+            int x = (int) (transformed.x*50 + 320/2);
+            int y = (int) (transformed.y*50 + 200/2);
             pixel(buffer, x, y, 0xff005e5a);
         }
         

@@ -5,7 +5,7 @@ INCLUDE := ./include
 SRC     := ./src
 SRCS    := $(wildcard $(SRC)/*.c)
 OBJS    := $(patsubst $(SRC)/%.c,$(OBJ)/%.o,$(SRCS))
-BINARY  := leos3d
+BINARY  := 3d
 CFLAGS  := -I$(INCLUDE)
 LDLIBS  := -lm
 
@@ -23,7 +23,7 @@ $(OBJ):
 	mkdir $@
 
 run: $(BINARY)
-	$<
+	./3d | ./play.sh
 
 clean:
 	rm -r $(OBJ) $(BINARY)
