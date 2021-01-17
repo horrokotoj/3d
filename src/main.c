@@ -1,6 +1,12 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+
+#define WIDTH 800
+#define HEIGHT 600
+#define RESOLUTION WIDTH*HEIGHT
+
 
 typedef struct {
     float x, y, z;
@@ -12,7 +18,7 @@ typedef struct {
 
 void clear(uint32_t *buffer, uint32_t colour)
 {
-    size_t n = 320*200;
+    size_t n = RESOLUTION;
     for(int i = 0; i < n; i++)
     {
         buffer[i] = colour;
@@ -21,7 +27,7 @@ void clear(uint32_t *buffer, uint32_t colour)
 
 void pixel(uint32_t *buffer, int x, int y, uint32_t colour)
 {
-    buffer[y*320 + x] = colour;
+    buffer[y*WIDTH + x] = colour;
 }
 
 float randf()
@@ -62,29 +68,59 @@ m3 identity_three()
     return a;
 }
 
+m3 rot_z(float alpha)
+{
+    m3 a;
+    a.x1 = cos(alpha);  a.x2 = -sin(alpha); a.x3 = 0;
+    a.y1 = sin(alpha);  a.y2 = cos(alpha);  a.y3 = 0;
+    a.z1 = 0;           a.z2 = 0;           a.z3 = 1;
+    return a;
+}
+
+m3 rot_y(float alpha)
+{
+    m3 a;
+    a.x1 = cos(alpha);  a.x2 = 0;  a.x3 = -sin(alpha);
+    a.y1 = 0;           a.y2 = 1;  a.y3 = 0;
+    a.z1 = sin(alpha);  a.z2 = 0;  a.z3 = cos(alpha);
+    return a;
+}
+
+m3 rot_x(float alpha)
+{
+    m3 a;
+    a.x1 = 1;  a.x2 = 0;           a.x3 = 0;
+    a.y1 = 0;  a.y2 = cos(alpha);  a.y3 = -sin(alpha);
+    a.z1 = 0;  a.z2 = sin(alpha);  a.z3 = cos(alpha);
+    return a;
+}
+
 int main()
 {
-    uint32_t buffer[320*200];
-    v3 points[50];
-    for (int i = 0; i < 50; i++)
+    uint32_t buffer[RESOLUTION];
+    const size_t n = 10000;
+    v3 points[n];
+    const float scale = HEIGHT * 0.4;
+    for (int i = 0; i < n; i++)
     {
         points[i].x = randf() - 0.5;
         points[i].y = randf() - 0.5;
         points[i].z = randf() - 0.5;
 
     }
-
-    //matrix
-    m3 matrix = identity_three();
-
     for(size_t frame = 0; ; frame++)
     {
+        m3 r_z = rot_z(frame*0.01);
+        m3 r_y = rot_y(frame*0.02);
+        m3 r_x = rot_x(frame*0.015);
+        m3 matrix = matrix_multi_three(r_z, r_y);
+        matrix = matrix_multi_three(matrix, r_x);
         clear(buffer, 0xffdceaf5);
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < n; i++)
         {
             v3 transformed = transformation_three(matrix, points[i]);
-            int x = (int) (transformed.x*50 + 320/2);
-            int y = (int) (transformed.y*50 + 200/2);
+            int x = (int) (transformed.x*scale + WIDTH/2);
+            int y = (int) (transformed.y*scale + HEIGHT/2);
             pixel(buffer, x, y, 0xff005e5a);
         }
         
