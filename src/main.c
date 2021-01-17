@@ -108,7 +108,7 @@ int main()
         points[i].z = randf() - 0.5;
 
     }
-    for(size_t frame = 0; frame < 300 ; frame++)
+    for(size_t frame = 0; frame < 150 ; frame++)
     {
         m3 r_z = rot_z(frame*0.01);
         m3 r_y = rot_y(frame*0.02);

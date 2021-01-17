@@ -26,7 +26,8 @@ run: $(BINARY)
 	./3d | ./play.sh
 
 gif: $(BINARY)
+	rm -f *.gif
 	./3d | ./gif_gen.sh
 
 clean:
-	rm -r $(OBJ) $(BINARY) *.gif
+	rm -r $(OBJ) $(BINARY)
